@@ -419,7 +419,7 @@ const handleFileAttached = async (file) => {
                     Save Changes
 </Button>
                 </div>
-              </div>
+</div>
             )}
           </div>
         </div>
