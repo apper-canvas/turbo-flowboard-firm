@@ -2,20 +2,20 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
-import FileUpload from "@/components/molecules/FileUpload";
 import commentService from "@/services/api/commentService";
 import userService from "@/services/api/userService";
 import taskService from "@/services/api/taskService";
 import ApperIcon from "@/components/ApperIcon";
 import FormField from "@/components/molecules/FormField";
+import FileUpload from "@/components/molecules/FileUpload";
 import Avatar from "@/components/atoms/Avatar";
 import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
 
 const TaskModal = ({ isOpen, task, users = [], onClose, onTaskUpdated }) => {
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({});
-const [loading, setLoading] = useState(false);
+const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loadingComments, setLoadingComments] = useState(false);
@@ -29,8 +29,8 @@ const [loading, setLoading] = useState(false);
         assigneeId: task.assigneeId || '',
         dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
         progress: task.progress || 0
-      });
-loadComments();
+});
+      loadComments();
       setAttachments(task.attachments || []);
     }
   }, [task]);
@@ -82,9 +82,8 @@ loadComments();
       setComments(prev => [...prev, comment]);
       setNewComment('');
       toast.success('Comment added');
-    } catch (error) {
-      toast.error('Failed to add comment');
-}
+toast.error('Failed to add comment');
+    }
   };
 
   const handleFileAttached = async (file) => {
@@ -364,9 +363,9 @@ loadComments();
                       >
                         Add Comment
                       </Button>
-                    </div>
 </div>
                   </div>
+                </div>
                 </div>
 
                 {/* File Attachments Section */}
@@ -404,12 +403,12 @@ loadComments();
                     className="flex-1"
                   >
                     Save Changes
-                  </Button>
+</Button>
                 </div>
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
       </motion.div>
     </AnimatePresence>
   );
