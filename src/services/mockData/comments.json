@@ -1,0 +1,37 @@
+[
+  {
+    "Id": 1,
+    "taskId": 2,
+    "authorId": 2,
+    "content": "Made good progress on the mobile breakpoints. Need to test on tablet sizes next.",
+    "createdAt": "2024-01-23T14:30:00Z"
+  },
+  {
+    "Id": 2,
+    "taskId": 2,
+    "authorId": 1,
+    "content": "Looks great! Make sure to check the dropdown menus work properly on touch devices.",
+    "createdAt": "2024-01-23T16:45:00Z"
+  },
+  {
+    "Id": 3,
+    "taskId": 5,
+    "authorId": 4,
+    "content": "Completed interviews with 8 users so far. The feedback on navigation preferences is very insightful.",
+    "createdAt": "2024-01-22T11:20:00Z"
+  },
+  {
+    "Id": 4,
+    "taskId": 8,
+    "authorId": 6,
+    "content": "Facebook and Instagram campaigns are live. Google Ads still needs approval.",
+    "createdAt": "2024-01-24T09:15:00Z"
+  },
+  {
+    "Id": 5,
+    "taskId": 8,
+    "authorId": 3,
+    "content": "Great work! The CTR on the Facebook campaign is already looking promising.",
+    "createdAt": "2024-01-24T13:25:00Z"
+  }
+]

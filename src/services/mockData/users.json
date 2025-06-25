@@ -1,0 +1,44 @@
+[
+  {
+    "Id": 1,
+    "name": "Sarah Chen",
+    "email": "sarah.chen@company.com",
+    "avatar": "#4CAF50",
+    "role": "designer"
+  },
+  {
+    "Id": 2,
+    "name": "Marcus Rodriguez",
+    "email": "marcus.rodriguez@company.com",
+    "avatar": "#2196F3",
+    "role": "developer"
+  },
+  {
+    "Id": 3,
+    "name": "Emma Thompson",
+    "email": "emma.thompson@company.com",
+    "avatar": "#FF9800",
+    "role": "content-manager"
+  },
+  {
+    "Id": 4,
+    "name": "David Kim",
+    "email": "david.kim@company.com",
+    "avatar": "#9C27B0",
+    "role": "researcher"
+  },
+  {
+    "Id": 5,
+    "name": "Alex Johnson",
+    "email": "alex.johnson@company.com",
+    "avatar": "#607D8B",
+    "role": "developer"
+  },
+  {
+    "Id": 6,
+    "name": "Lisa Wang",
+    "email": "lisa.wang@company.com",
+    "avatar": "#E91E63",
+    "role": "marketing"
+  }
+]
