@@ -54,10 +54,18 @@ const TaskCard = ({ task, user, onClick, isDragging = false }) => {
         <div className="flex items-start justify-between gap-2">
           <h4 className="font-medium text-surface-900 text-sm leading-snug flex-1 min-w-0">
             {task.title}
-          </h4>
-          {task.dependencies?.length > 0 && (
-            <ApperIcon name="Link" size={14} className="text-surface-400 flex-shrink-0" />
-          )}
+</h4>
+          <div className="flex items-center gap-1">
+            {task.attachments?.length > 0 && (
+              <div className="flex items-center gap-1">
+                <ApperIcon name="Paperclip" size={12} className="text-surface-400" />
+                <span className="text-xs text-surface-500">{task.attachments.length}</span>
+              </div>
+            )}
+            {task.dependencies?.length > 0 && (
+              <ApperIcon name="Link" size={14} className="text-surface-400 flex-shrink-0" />
+            )}
+          </div>
         </div>
 
         {/* Description */}

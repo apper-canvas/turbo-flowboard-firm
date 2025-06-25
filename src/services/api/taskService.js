@@ -27,12 +27,13 @@ export const taskService = {
   async create(taskData) {
     await delay(400);
     const maxId = Math.max(...tasks.map(t => t.Id), 0);
-    const newTask = {
+const newTask = {
       Id: maxId + 1,
       ...taskData,
       progress: 0,
       dependencies: taskData.dependencies || [],
-      position: taskData.position || 0
+      position: taskData.position || 0,
+      attachments: taskData.attachments || []
     };
     tasks.push(newTask);
     return { ...newTask };
@@ -81,8 +82,57 @@ export const taskService = {
     }
     
     const deletedTask = { ...tasks[index] };
-    tasks.splice(index, 1);
+tasks.splice(index, 1);
     return deletedTask;
+  },
+
+  async attachFile(taskId, fileData) {
+    await delay(300);
+    const index = tasks.findIndex(t => t.Id === parseInt(taskId, 10));
+    if (index === -1) {
+      throw new Error('Task not found');
+    }
+
+    const file = {
+      Id: Date.now(), // Simple ID for mock data
+      name: fileData.name,
+      size: fileData.size,
+      type: fileData.type,
+      url: fileData.url || URL.createObjectURL(fileData),
+      uploadedAt: new Date().toISOString()
+    };
+
+    if (!tasks[index].attachments) {
+      tasks[index].attachments = [];
+    }
+
+    tasks[index].attachments.push(file);
+    return { ...tasks[index] };
+  },
+
+  async removeFile(taskId, fileId) {
+    await delay(200);
+    const index = tasks.findIndex(t => t.Id === parseInt(taskId, 10));
+    if (index === -1) {
+      throw new Error('Task not found');
+    }
+
+    if (tasks[index].attachments) {
+      tasks[index].attachments = tasks[index].attachments.filter(
+        file => file.Id !== fileId
+      );
+    }
+
+    return { ...tasks[index] };
+  },
+
+  async getFiles(taskId) {
+    await delay(200);
+    const task = tasks.find(t => t.Id === parseInt(taskId, 10));
+    if (!task) {
+      throw new Error('Task not found');
+    }
+    return task.attachments || [];
   }
 };
 

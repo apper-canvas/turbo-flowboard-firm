@@ -372,7 +372,7 @@ const MyTasks = () => {
         onClose={() => {
           setIsTaskModalOpen(false);
           setSelectedTask(null);
-        }}
+}}
         onTaskUpdated={handleTaskUpdated}
       />
     </div>

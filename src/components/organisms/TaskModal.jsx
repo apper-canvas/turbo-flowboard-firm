@@ -1,24 +1,25 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-toastify';
-import { format } from 'date-fns';
-import Button from '@/components/atoms/Button';
-import Badge from '@/components/atoms/Badge';
-import Avatar from '@/components/atoms/Avatar';
-import FormField from '@/components/molecules/FormField';
-import ApperIcon from '@/components/ApperIcon';
-import { taskService } from '@/services/api/taskService';
-import { userService } from '@/services/api/userService';
-import { commentService } from '@/services/api/commentService';
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { format } from "date-fns";
+import FileUpload from "@/components/molecules/FileUpload";
+import commentService from "@/services/api/commentService";
+import userService from "@/services/api/userService";
+import taskService from "@/services/api/taskService";
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
+import Avatar from "@/components/atoms/Avatar";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
 
 const TaskModal = ({ isOpen, task, users = [], onClose, onTaskUpdated }) => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
-  const [loading, setLoading] = useState(false);
+const [loading, setLoading] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loadingComments, setLoadingComments] = useState(false);
-
+  const [attachments, setAttachments] = useState([]);
   useEffect(() => {
     if (task) {
       setFormData({
@@ -29,7 +30,8 @@ const TaskModal = ({ isOpen, task, users = [], onClose, onTaskUpdated }) => {
         dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
         progress: task.progress || 0
       });
-      loadComments();
+loadComments();
+      setAttachments(task.attachments || []);
     }
   }, [task]);
 
@@ -82,7 +84,19 @@ const TaskModal = ({ isOpen, task, users = [], onClose, onTaskUpdated }) => {
       toast.success('Comment added');
     } catch (error) {
       toast.error('Failed to add comment');
-    }
+}
+  };
+
+  const handleFileAttached = async (file) => {
+    const updatedTask = await taskService.attachFile(task.Id, file);
+    setAttachments(updatedTask.attachments || []);
+    onTaskUpdated(updatedTask);
+  };
+
+  const handleFileRemoved = async (fileId) => {
+    const updatedTask = await taskService.removeFile(task.Id, fileId);
+    setAttachments(updatedTask.attachments || []);
+    onTaskUpdated(updatedTask);
   };
 
   const getStatusVariant = (status) => {
@@ -351,7 +365,23 @@ const TaskModal = ({ isOpen, task, users = [], onClose, onTaskUpdated }) => {
                         Add Comment
                       </Button>
                     </div>
+</div>
                   </div>
+                </div>
+
+                {/* File Attachments Section */}
+                <div className="border-t border-surface-200 pt-6">
+                  <h4 className="font-medium text-surface-900 mb-4 flex items-center gap-2">
+                    <ApperIcon name="Paperclip" size={18} />
+                    File Attachments ({attachments.length})
+                  </h4>
+                  
+                  <FileUpload
+                    taskId={task.Id}
+                    onFileAttached={handleFileAttached}
+                    onFileRemoved={handleFileRemoved}
+                    existingFiles={attachments}
+                  />
                 </div>
               </div>
             </div>
