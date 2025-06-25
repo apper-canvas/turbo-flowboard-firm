@@ -420,10 +420,11 @@ Save Changes
                   </Button>
                 </div>
               </div>
-            )}
+)}
           </div>
         </motion.div>
       </motion.div>
+    </AnimatePresence>
   );
 };
 
