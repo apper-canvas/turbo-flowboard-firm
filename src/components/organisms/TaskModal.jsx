@@ -417,10 +417,10 @@ const handleFileAttached = async (file) => {
                     className="flex-1"
                   >
                     Save Changes
-                  </Button>
+</Button>
                 </div>
               </div>
-)}
+            )}
           </div>
         </div>
       </motion.div>
