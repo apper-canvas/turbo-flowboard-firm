@@ -135,12 +135,12 @@ const handleFileAttached = async (file) => {
   const modalVariants = {
     open: { opacity: 1, scale: 1 },
     closed: { opacity: 0, scale: 0.95 }
-  };
-
-  if (!isOpen || !task) return null;
+};
 
   return (
     <AnimatePresence>
+      {isOpen && task && (
+        <>
       <motion.div
         initial="closed"
         animate="open"
@@ -423,7 +423,9 @@ Save Changes
 )}
           </div>
         </motion.div>
-      </motion.div>
+</motion.div>
+        </>
+      )}
     </AnimatePresence>
   );
 };
