@@ -70,7 +70,7 @@ const [formData, setFormData] = useState({});
     }
   };
 
-  const handleAddComment = async () => {
+const handleAddComment = async () => {
     if (!newComment.trim()) return;
 
     try {
@@ -82,20 +82,34 @@ const [formData, setFormData] = useState({});
       setComments(prev => [...prev, comment]);
       setNewComment('');
       toast.success('Comment added');
-toast.error('Failed to add comment');
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+      toast.error('Failed to add comment');
     }
   };
 
-  const handleFileAttached = async (file) => {
-    const updatedTask = await taskService.attachFile(task.Id, file);
-    setAttachments(updatedTask.attachments || []);
-    onTaskUpdated(updatedTask);
+const handleFileAttached = async (file) => {
+    try {
+      const updatedTask = await taskService.attachFile(task.Id, file);
+      setAttachments(updatedTask.attachments || []);
+      onTaskUpdated(updatedTask);
+      toast.success('File attached successfully');
+    } catch (error) {
+      console.error('Failed to attach file:', error);
+      toast.error('Failed to attach file');
+    }
   };
 
   const handleFileRemoved = async (fileId) => {
-    const updatedTask = await taskService.removeFile(task.Id, fileId);
-    setAttachments(updatedTask.attachments || []);
-    onTaskUpdated(updatedTask);
+    try {
+      const updatedTask = await taskService.removeFile(task.Id, fileId);
+      setAttachments(updatedTask.attachments || []);
+      onTaskUpdated(updatedTask);
+      toast.success('File removed successfully');
+    } catch (error) {
+      console.error('Failed to remove file:', error);
+      toast.error('Failed to remove file');
+    }
   };
 
   const getStatusVariant = (status) => {
