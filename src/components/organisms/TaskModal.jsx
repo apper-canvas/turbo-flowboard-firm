@@ -411,19 +411,19 @@ const handleFileAttached = async (file) => {
                   >
                     Cancel
                   </Button>
-                  <Button
+<Button
                     onClick={handleSave}
                     loading={loading}
                     className="flex-1"
                   >
-Save Changes
+                    Save Changes
                   </Button>
                 </div>
               </div>
 )}
           </div>
-        </motion.div>
-</motion.div>
+        </div>
+      </motion.div>
         </>
       )}
     </AnimatePresence>
