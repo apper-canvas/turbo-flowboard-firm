@@ -7,6 +7,7 @@ import Badge from '@/components/atoms/Badge';
 import TaskCard from '@/components/molecules/TaskCard';
 import SearchBar from '@/components/molecules/SearchBar';
 import TaskModal from '@/components/organisms/TaskModal';
+import BulkActionToolbar from '@/components/organisms/BulkActionToolbar';
 import SkeletonLoader from '@/components/organisms/SkeletonLoader';
 import ErrorState from '@/components/organisms/ErrorState';
 import EmptyState from '@/components/organisms/EmptyState';
@@ -20,6 +21,8 @@ const MyTasks = () => {
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
+  const [selectedTasks, setSelectedTasks] = useState([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,15 +101,61 @@ const MyTasks = () => {
     setFilteredTasks(filtered);
   };
 
-  const handleTaskClick = (task) => {
-    setSelectedTask(task);
-    setIsTaskModalOpen(true);
+const handleTaskClick = (task) => {
+    if (!isSelectionMode) {
+      setSelectedTask(task);
+      setIsTaskModalOpen(true);
+    }
+  };
+
+  const handleTaskSelect = (task, isSelected) => {
+    if (isSelected) {
+      setSelectedTasks(prev => [...prev, task]);
+      if (!isSelectionMode) {
+        setIsSelectionMode(true);
+      }
+    } else {
+      setSelectedTasks(prev => prev.filter(t => t.Id !== task.Id));
+      if (selectedTasks.length === 1) {
+        setIsSelectionMode(false);
+      }
+    }
+  };
+
+  const handleClearSelection = () => {
+    setSelectedTasks([]);
+    setIsSelectionMode(false);
+  };
+
+  const handleTasksUpdated = () => {
+    loadData();
   };
 
   const handleTaskUpdated = (updatedTask) => {
     setTasks(prev => prev.map(task => 
       task.Id === updatedTask.Id ? updatedTask : task
     ));
+  };
+
+  const handleToggleSelectionMode = () => {
+    if (isSelectionMode) {
+      handleClearSelection();
+    } else {
+      setIsSelectionMode(true);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedTasks.length === filteredTasks.length) {
+      handleClearSelection();
+    } else {
+      setSelectedTasks([...filteredTasks]);
+      setIsSelectionMode(true);
+    }
+  };
+
+  const isTaskSelected = (task) => {
+    return selectedTasks.some(t => t.Id === task.Id);
   };
 
   const getProjectById = (projectId) => {
@@ -234,7 +283,7 @@ const MyTasks = () => {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Filters */}
-          <div className="bg-white rounded-lg border border-surface-200 p-4">
+<div className="bg-white rounded-lg border border-surface-200 p-4">
             <div className="flex flex-col sm:flex-row gap-4">
               <SearchBar
                 placeholder="Search tasks..."
@@ -242,6 +291,28 @@ const MyTasks = () => {
                 className="flex-1"
               />
               <div className="flex gap-2">
+                {filteredTasks.length > 0 && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={isSelectionMode ? "X" : "CheckSquare"}
+                      onClick={handleToggleSelectionMode}
+                    >
+                      {isSelectionMode ? 'Cancel' : 'Select'}
+                    </Button>
+                    {isSelectionMode && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        icon="CheckCircle"
+                        onClick={handleSelectAll}
+                      >
+                        {selectedTasks.length === filteredTasks.length ? 'Deselect All' : 'Select All'}
+                      </Button>
+                    )}
+                  </>
+                )}
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -287,10 +358,13 @@ const MyTasks = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <TaskCard
+<TaskCard
                     task={task}
                     user={getUserById(task.assigneeId)}
                     onClick={() => handleTaskClick(task)}
+                    isSelectionMode={isSelectionMode}
+                    isSelected={isTaskSelected(task)}
+                    onSelect={(isSelected) => handleTaskSelect(task, isSelected)}
                   />
                 </motion.div>
               ))}
@@ -374,6 +448,14 @@ const MyTasks = () => {
           setSelectedTask(null);
 }}
         onTaskUpdated={handleTaskUpdated}
+      />
+
+      <BulkActionToolbar
+        selectedTasks={selectedTasks}
+        onClearSelection={handleClearSelection}
+        onTasksUpdated={handleTasksUpdated}
+        projects={projects}
+        users={users}
       />
     </div>
   );

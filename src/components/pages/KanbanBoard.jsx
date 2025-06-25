@@ -8,6 +8,7 @@ import TaskCard from '@/components/molecules/TaskCard';
 import KanbanColumn from '@/components/molecules/KanbanColumn';
 import CreateTaskModal from '@/components/organisms/CreateTaskModal';
 import TaskModal from '@/components/organisms/TaskModal';
+import BulkActionToolbar from '@/components/organisms/BulkActionToolbar';
 import SkeletonLoader from '@/components/organisms/SkeletonLoader';
 import ErrorState from '@/components/organisms/ErrorState';
 import EmptyState from '@/components/organisms/EmptyState';
@@ -20,16 +21,17 @@ const KanbanBoard = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   
-  const [project, setProject] = useState(null);
+const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
+  const [selectedTasks, setSelectedTasks] = useState([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
   const [createTaskStatus, setCreateTaskStatus] = useState('todo');
   const [selectedTask, setSelectedTask] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-
   const columns = [
     { id: 'todo', title: 'To Do' },
     { id: 'in-progress', title: 'In Progress' },
@@ -105,7 +107,7 @@ const KanbanBoard = () => {
     }
   };
 
-  const handleAddTask = (status) => {
+const handleAddTask = (status) => {
     setCreateTaskStatus(status);
     setIsCreateTaskModalOpen(true);
   };
@@ -115,14 +117,60 @@ const KanbanBoard = () => {
   };
 
   const handleTaskClick = (task) => {
-    setSelectedTask(task);
-    setIsTaskModalOpen(true);
+    if (!isSelectionMode) {
+      setSelectedTask(task);
+      setIsTaskModalOpen(true);
+    }
+  };
+
+  const handleTaskSelect = (task, isSelected) => {
+    if (isSelected) {
+      setSelectedTasks(prev => [...prev, task]);
+      if (!isSelectionMode) {
+        setIsSelectionMode(true);
+      }
+    } else {
+      setSelectedTasks(prev => prev.filter(t => t.Id !== task.Id));
+      if (selectedTasks.length === 1) {
+        setIsSelectionMode(false);
+      }
+    }
+  };
+
+  const handleClearSelection = () => {
+    setSelectedTasks([]);
+    setIsSelectionMode(false);
+  };
+
+  const handleTasksUpdated = () => {
+    loadData();
   };
 
   const handleTaskUpdated = (updatedTask) => {
     setTasks(prev => prev.map(task => 
       task.Id === updatedTask.Id ? updatedTask : task
     ));
+  };
+
+  const handleToggleSelectionMode = () => {
+    if (isSelectionMode) {
+      handleClearSelection();
+    } else {
+      setIsSelectionMode(true);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedTasks.length === tasks.length) {
+      handleClearSelection();
+    } else {
+      setSelectedTasks([...tasks]);
+      setIsSelectionMode(true);
+    }
+  };
+
+  const isTaskSelected = (task) => {
+    return selectedTasks.some(t => t.Id === task.Id);
   };
 
   const getTasksByStatus = (status) => {
@@ -194,8 +242,30 @@ const KanbanBoard = () => {
                 {project.description}
               </p>
             </div>
-          </div>
+</div>
           <div className="flex items-center gap-3">
+            {tasks.length > 0 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={isSelectionMode ? "X" : "CheckSquare"}
+                  onClick={handleToggleSelectionMode}
+                >
+                  {isSelectionMode ? 'Cancel' : 'Select'}
+                </Button>
+                {isSelectionMode && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon="CheckCircle"
+                    onClick={handleSelectAll}
+                  >
+                    {selectedTasks.length === tasks.length ? 'Deselect All' : 'Select All'}
+                  </Button>
+                )}
+              </>
+            )}
             <Button
               variant="ghost"
               icon="Calendar"
@@ -233,12 +303,16 @@ const KanbanBoard = () => {
                   const columnTasks = getTasksByStatus(column.id);
                   return (
                     <div key={column.id} className="w-80 flex-shrink-0">
-                      <KanbanColumn
+<KanbanColumn
                         column={column}
                         tasks={columnTasks}
                         users={users}
                         onTaskClick={handleTaskClick}
                         onAddTask={handleAddTask}
+                        isSelectionMode={isSelectionMode}
+                        selectedTasks={selectedTasks}
+                        onTaskSelect={handleTaskSelect}
+                        isTaskSelected={isTaskSelected}
                       />
                     </div>
                   );
@@ -265,7 +339,15 @@ const KanbanBoard = () => {
           setIsTaskModalOpen(false);
           setSelectedTask(null);
         }}
-        onTaskUpdated={handleTaskUpdated}
+onTaskUpdated={handleTaskUpdated}
+      />
+
+      <BulkActionToolbar
+        selectedTasks={selectedTasks}
+        onClearSelection={handleClearSelection}
+        onTasksUpdated={handleTasksUpdated}
+        projects={[project]}
+        users={users}
       />
     </div>
   );

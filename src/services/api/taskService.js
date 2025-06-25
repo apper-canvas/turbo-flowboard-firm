@@ -131,8 +131,97 @@ tasks.splice(index, 1);
     const task = tasks.find(t => t.Id === parseInt(taskId, 10));
     if (!task) {
       throw new Error('Task not found');
-    }
+}
     return task.attachments || [];
+  },
+
+  async bulkUpdate(taskIds, updates) {
+    await delay(500);
+    const updatedTasks = [];
+    
+    for (const taskId of taskIds) {
+      const index = tasks.findIndex(t => t.Id === parseInt(taskId, 10));
+      if (index !== -1) {
+        const updatedTask = {
+          ...tasks[index],
+          ...updates,
+          Id: tasks[index].Id // Prevent Id modification
+        };
+        tasks[index] = updatedTask;
+        updatedTasks.push({ ...updatedTask });
+      }
+    }
+    
+    return updatedTasks;
+  },
+
+  async bulkDelete(taskIds) {
+    await delay(400);
+    const deletedTasks = [];
+    
+    // Sort by index in reverse order to avoid index shifting issues
+    const indices = taskIds
+      .map(id => ({ id, index: tasks.findIndex(t => t.Id === parseInt(id, 10)) }))
+      .filter(item => item.index !== -1)
+      .sort((a, b) => b.index - a.index);
+    
+    for (const item of indices) {
+      const deletedTask = { ...tasks[item.index] };
+      tasks.splice(item.index, 1);
+      deletedTasks.push(deletedTask);
+    }
+    
+    return deletedTasks;
+  },
+
+  async bulkMove(taskIds, targetStatus, targetProjectId = null) {
+    await delay(450);
+    const movedTasks = [];
+    
+    for (const taskId of taskIds) {
+      const index = tasks.findIndex(t => t.Id === parseInt(taskId, 10));
+      if (index !== -1) {
+        const updates = { status: targetStatus };
+        if (targetProjectId !== null) {
+          updates.projectId = parseInt(targetProjectId, 10);
+        }
+        if (targetStatus === 'done') {
+          updates.progress = 100;
+        }
+        
+        const updatedTask = {
+          ...tasks[index],
+          ...updates,
+          Id: tasks[index].Id
+        };
+        
+        tasks[index] = updatedTask;
+        movedTasks.push({ ...updatedTask });
+      }
+    }
+    
+    return movedTasks;
+  },
+
+  async bulkAssign(taskIds, assigneeId) {
+    await delay(350);
+    const assignedTasks = [];
+    
+    for (const taskId of taskIds) {
+      const index = tasks.findIndex(t => t.Id === parseInt(taskId, 10));
+      if (index !== -1) {
+        const updatedTask = {
+          ...tasks[index],
+          assigneeId: parseInt(assigneeId, 10),
+          Id: tasks[index].Id
+        };
+        
+        tasks[index] = updatedTask;
+        assignedTasks.push({ ...updatedTask });
+      }
+    }
+    
+    return assignedTasks;
   }
 };
 

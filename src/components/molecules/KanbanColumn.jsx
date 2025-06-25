@@ -9,7 +9,11 @@ const KanbanColumn = ({
   tasks = [], 
   users = [], 
   onTaskClick, 
-  onAddTask 
+  onAddTask,
+  isSelectionMode = false,
+  selectedTasks = [],
+  onTaskSelect,
+  isTaskSelected
 }) => {
   const getColumnColor = (status) => {
     switch (status) {
@@ -81,10 +85,13 @@ const KanbanColumn = ({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <TaskCard
+<TaskCard
                   task={task}
                   user={getUserById(task.assigneeId)}
                   onClick={() => onTaskClick(task)}
+                  isSelectionMode={isSelectionMode}
+                  isSelected={isTaskSelected && isTaskSelected(task)}
+                  onSelect={(isSelected) => onTaskSelect && onTaskSelect(task, isSelected)}
                 />
               </motion.div>
             ))}
